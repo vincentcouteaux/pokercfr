@@ -1,6 +1,7 @@
 from cfr import *
 
-strategy = get_optimal_strat()
+strategy = get_optimal_strat(10000)
+print(strategy)
 
 human_stack = 10
 ai_stack = 10
@@ -16,8 +17,7 @@ def draw(p):
         i += 1
     return i
 
-while command != 'e':
-    print('type "e" any time to exit')
+while command != 'n':
     history = deal()
     actions = get_actions_available(history)
     if human_dealer:
@@ -28,7 +28,8 @@ while command != 'e':
         human_to_play = True
     while type(actions) != int:
         if not human_to_play:
-            ai_info = history_to_info_set(history,1)
+            ai_info = history_to_info_set(history,1*human_dealer)
+            #print("ai info: {0}, strategy: {1}".format(ai_info, strategy[ai_info]))
             c = draw(strategy[ai_info])
             history += actions[c]
             print('ai played {0}'.format(actions[c]))
@@ -45,7 +46,8 @@ while command != 'e':
     human_stack += actions
     ai_stack -= actions
     print("oppenent shows {0}".format(history[1*human_dealer]))
-    print("your stack: {0}, opponent stack: {0}".format(human_stack, ai_stack))
-    print("rematch ? a yes, e no")
+    print("your stack: {0}, opponent stack: {1}".format(human_stack, ai_stack))
+    print("rematch ? 'y' yes, 'n' no")
     command = raw_input()
+    print("\n\n\n")
     human_dealer = not human_dealer
