@@ -43,10 +43,10 @@ def history_to_info_set(history, player_index):
     return history[:pos] + history[(pos+1):]
 
 
-strategy = {}
-cumulated_regret = {}
+#strategy = {}
+#cumulated_regret = {}
 
-def cfr(history, player, pi1, pi2):
+def cfr(history, player, pi1, pi2, strategy, cumulated_regret):
     actions = get_actions_available(history)
     if debug:
         print('** history: {0}, actions: {1}'.format(history, actions))
@@ -65,9 +65,11 @@ def cfr(history, player, pi1, pi2):
         cumulated_regret[info_set] = np.zeros(number_actions);
     for i, a in enumerate(actions):
         if player_turn == 0:
-            v_sigmaI[i] = cfr(history + a, player, strategy[info_set][i]*pi1, pi2)
+            v_sigmaI[i] = cfr(history + a, player, strategy[info_set][i]*pi1, pi2,
+                    strategy, cumulated_regret)
         else:
-            v_sigmaI[i] = cfr(history + a, player, pi1, strategy[info_set][i]*pi2)
+            v_sigmaI[i] = cfr(history + a, player, pi1, strategy[info_set][i]*pi2,
+                    strategy, cumulated_regret)
         v_sigma += strategy[info_set][i]*v_sigmaI[i]
     if player_turn == player:
         if i == 1:
@@ -91,7 +93,9 @@ def cfr(history, player, pi1, pi2):
             strategy[info_set] = np.ones(number_actions) / number_actions
     return v_sigma
 
-if __name__ == "__main__":
+def get_optimal_strat():
+    strategy = {}
+    cumulated_regret = {}
     if debug:
         T = 10
         cfr('QJ', 1, 1, 1)
@@ -103,8 +107,12 @@ if __name__ == "__main__":
         cards = deal()
         if debug:
             print("player 0")
-        cfr(cards, 0, 1, 1)
+        cfr(cards, 0, 1, 1, strategy, cumulated_regret)
         if debug:
             print("player 1")
-        cfr(cards, 1, 1, 1)
+        cfr(cards, 1, 1, 1, strategy, cumulated_regret)
+    return strategy
+
+if __name__ == "__main__":
+    strategy = get_optimal_strat()
     print(strategy)
