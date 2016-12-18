@@ -1,42 +1,12 @@
 import numpy as np
 import random
+from khun import *
 
 #Player 0 has the button
 #Player 1 is UTG
 # An history is for instance 'JQpb', button has card J, utg has card Q, button passes, utg bets
 
 debug = False
-
-def deal():
-    return ''.join(random.sample('JQK', 3))[:2]
-
-def whose_turn(history):
-    return (len(history) + 1)%2
-
-def value(card):
-    if card == 'Q':
-        return 1
-    elif card == 'K':
-        return 2
-    else:
-        return 0
-
-def button_beats(card1, card2):
-    return value(card1) > value(card2)
-
-def get_actions_available(history):
-    if history == '':
-        return 'D'
-    if history[2:] == 'pp':
-        return 2*(value(history[0]) > value(history[1])) - 1
-    elif history[-2:] == 'bb':
-        return 4*(value(history[0]) > value(history[1])) - 2
-    elif history[2:] == 'bp':
-        return -1
-    elif history[2:] == 'pbp':
-        return 1
-    else:
-        return ['p', 'b']
 
 def history_to_info_set(history, player_index):
     pos = 1 - player_index
@@ -45,14 +15,14 @@ def history_to_info_set(history, player_index):
 
 #strategy = {}
 #cumulated_regret = {}
-def cfr_2p(history, player, pi1, pi2, strategy, cumulated_regret, cumulated_strat):
-    actions = get_actions_available(history)
+def cfr_2p(game, history, player, pi1, pi2, strategy, cumulated_regret, cumulated_strat):
+    actions = game.get_actions_available(history)
     if type(actions) == int:
         if player == 0:
             return actions
         else:
             return -actions
-    player_turn = whose_turn(history)
+    player_turn = game.whose_turn(history)
     number_actions = len(actions)
     v_sigma = 0
     v_sigmaI = np.zeros(number_actions)
@@ -63,10 +33,10 @@ def cfr_2p(history, player, pi1, pi2, strategy, cumulated_regret, cumulated_stra
         cumulated_strat[info_set] = np.zeros(number_actions);
     for i, a in enumerate(actions):
         if player_turn == 0:
-            v_sigmaI[i] = cfr_2p(history + a, player, strategy[info_set][i]*pi1, pi2,
+            v_sigmaI[i] = cfr_2p(game, history + a, player, strategy[info_set][i]*pi1, pi2,
                     strategy, cumulated_regret, cumulated_strat)
         else:
-            v_sigmaI[i] = cfr_2p(history + a, player, pi1, strategy[info_set][i]*pi2,
+            v_sigmaI[i] = cfr_2p(game, history + a, player, pi1, strategy[info_set][i]*pi2,
                     strategy, cumulated_regret, cumulated_strat)
         v_sigma += strategy[info_set][i]*v_sigmaI[i]
     if player_turn == player:
@@ -86,14 +56,14 @@ def cfr_2p(history, player, pi1, pi2, strategy, cumulated_regret, cumulated_stra
             strategy[info_set] = np.ones(number_actions) / number_actions
     return v_sigma
 
-def get_optimal_strat(T):
+def get_optimal_strat(game, T):
     strategy = {}
     cumulated_regret = {}
     cumulated_strategy = {}
     for t in range(T):
-        cards = deal()
-        cfr_2p(cards, 0, 1, 1, strategy, cumulated_regret, cumulated_strategy)
-        cfr_2p(cards, 1, 1, 1, strategy, cumulated_regret, cumulated_strategy)
+        cards = game.deal()
+        cfr_2p(game, cards, 0, 1, 1, strategy, cumulated_regret, cumulated_strategy)
+        cfr_2p(game, cards, 1, 1, 1, strategy, cumulated_regret, cumulated_strategy)
     for infoset in cumulated_strategy:
         cumulated_strategy[infoset] /= np.sum(cumulated_strategy[infoset])
     return cumulated_strategy
@@ -103,7 +73,8 @@ if __name__ == "__main__":
         T = 10
     else:
         T = 10000
-    strategy = get_optimal_strat(T)
+    game = Khun()
+    strategy = get_optimal_strat(game, T)
     print(strategy)
     print("J: pass = %.2f, bet = %.2f" % (strategy["J"][0],strategy["J"][1]))
     print("K: pass = %.2f, bet = %.2f" % (strategy["K"][0],strategy["K"][1]))

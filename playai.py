@@ -1,6 +1,8 @@
 from cfr import *
 
-strategy = get_optimal_strat(10000)
+game = KhunNCardsRaise(13)
+
+strategy = get_optimal_strat(game, 60000)
 print(strategy)
 
 human_stack = 10
@@ -18,8 +20,8 @@ def draw(p):
     return i
 
 while command != 'n':
-    history = deal()
-    actions = get_actions_available(history)
+    history = game.deal()
+    actions = game.get_actions_available(history)
     if human_dealer:
         print('Your card is {0}'.format(history[0]))
         human_to_play = False
@@ -33,13 +35,13 @@ while command != 'n':
             c = draw(strategy[ai_info])
             history += actions[c]
             print('ai played {0}'.format(actions[c]))
-            actions = get_actions_available(history)
+            actions = game.get_actions_available(history)
             human_to_play = True
         else:
             print('You can play: {0}'.format(actions))
             c = raw_input()
             history += c
-            actions = get_actions_available(history)
+            actions = game.get_actions_available(history)
             human_to_play = False
     if not human_dealer:
         actions = -actions
