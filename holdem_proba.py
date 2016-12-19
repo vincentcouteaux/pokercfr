@@ -66,34 +66,41 @@ def is_straight_flush(hand):
             color_sort[color].sort(reverse=True)
             flush = color_sort[color]
     consecutive_connected = []
+    if 14 in flush:
+        flush.append(1)
+    flush = list(set(flush))
+    flush.sort(reverse=True)
     for i, k in enumerate(flush[1:]):
         if k - flush[i] == -1:
             if consecutive_connected == []:
                 consecutive_connected.append(flush[i])
             consecutive_connected.append(k)
             if len(consecutive_connected) == 5:
-                return consecutive_connected
+                return consecutive_connected[0]
         else:
             consecutive_connected = []
     return []
 
-
-
-def hand_value(hand):
-    #check for flush:
-    color_sort = {Color.spade: [], Color.heart: [], Color.diamond: [], Color.club: []}
+def is_straight(hand):
+    values = []
     for card in hand:
-        color_sort[card.color].append(card.value)
-    for color in color_sort:
-        if len(color_sort[color]) >= 5: #Flush
-            if CardValue.A in color_sort[color]:
-                color_sort[color].append[1]
-            color_sort[color].sort()
-            #check for straight flush
-            if sum(np.array(color_sort[color]+[0]) -
-                    np.array([0]+color_sort[color]) == 1) >= 4:
-                return max(color_sort[color]) #Straight flush !!
-    return 0
+        values.append(card.value)
+    if 14 in values:
+        values.append(1)
+    values = list(set(values))
+    values.sort(reverse=True)
+    consecutive_connected = []
+    for i, k in enumerate(values[1:]):
+        if k - values[i] == -1:
+            if consecutive_connected == []:
+                consecutive_connected.append(values[i])
+            consecutive_connected.append(k)
+            if len(consecutive_connected) == 5:
+                return consecutive_connected[0]
+        else:
+            consecutive_connected = []
+    return []
+
 
 
 def is_quad(hand):
@@ -126,13 +133,18 @@ def is_quad(hand):
 if __name__ == "__main__":
 
     hand = string2hand("5s7hJs4s6s3s2h")
-    print(hand)
     print(is_flush(hand))
     print(is_straight_flush(hand))
 
     hand = string2hand("5s5c5d5hJs3s2s")
-    print(hand)
     print(is_quad(hand))
 
+    hand = string2hand("JhTh5c2sQdKhAh")
+    print(is_straight(hand))
+    print(is_straight_flush(hand))
+
+    hand = string2hand("3h4h5h2hQd6cAh")
+    print(is_straight(hand))
+    print(is_straight_flush(hand))
 
 
