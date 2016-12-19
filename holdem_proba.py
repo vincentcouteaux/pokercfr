@@ -46,6 +46,39 @@ def string2hand(string):
         out.append(Card(value, color))
     return out
 
+def is_flush(hand):
+    color_sort = {Color.spade: [], Color.heart: [], Color.diamond: [], Color.club: []}
+    for card in hand:
+        color_sort[card.color].append(card.value)
+    for color in color_sort:
+        if len(color_sort[color]) >= 5: #Flush
+            color_sort[color].sort(reverse=True)
+            return color_sort[color][:5]
+    return []
+
+def is_straight_flush(hand):
+    color_sort = {Color.spade: [], Color.heart: [], Color.diamond: [], Color.club: []}
+    for card in hand:
+        color_sort[card.color].append(card.value)
+    flush = []
+    for color in color_sort:
+        if len(color_sort[color]) >= 5: #Flush
+            color_sort[color].sort(reverse=True)
+            flush = color_sort[color]
+    consecutive_connected = []
+    for i, k in enumerate(flush[1:]):
+        if k - flush[i] == -1:
+            if consecutive_connected == []:
+                consecutive_connected.append(flush[i])
+            consecutive_connected.append(k)
+            if len(consecutive_connected) == 5:
+                return consecutive_connected
+        else:
+            consecutive_connected = []
+    return []
+
+
+
 def hand_value(hand):
     #check for flush:
     color_sort = {Color.spade: [], Color.heart: [], Color.diamond: [], Color.club: []}
@@ -63,7 +96,8 @@ def hand_value(hand):
     return 0
 
 if __name__ == "__main__":
-    hand = string2hand("5s7hJc4s6s3s2s")
+    hand = string2hand("5s7hJs4s6s3s2h")
     print(hand)
-    print(hand_value(hand))
+    print(is_flush(hand))
+    print(is_straight_flush(hand))
 
