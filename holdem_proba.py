@@ -146,16 +146,93 @@ def is_trips(hand):
         out += a[:2]
     return out
 
+def is_pair(hand):
+    out = []
+    nb_sort = {}
+    for card in hand:
+        if card.value in nb_sort:
+            nb_sort[card.value]+= 1
+        else:
+            nb_sort[card.value]=1
+
+    for i in nb_sort:
+        if nb_sort[i] == 2:
+            out.append(i)
+
+    nb_sort = sorted(nb_sort, reverse=True)
+    if out != []:
+        nb_sort.remove(out[0])
+        out += nb_sort[:3]
+    return out
+
+def is_double_pair(hand):
+    buckets = {}
+    for card in hand:
+        if card.value in buckets:
+            buckets[card.value] += 1
+        else:
+            buckets[card.value]=1
+    out = []
+    kicker = 1
+    for v in sorted(buckets, reverse = True):
+        if buckets[v] == 2 and len(out) < 2:
+            out.append(v)
+        elif v > kicker:
+            kicker = v
+    if len(out) == 2:
+        return out + [kicker]
+    else:
+        return []
+
+def has_nothing(hand):
+    values = []
+    for card in hand:
+        values.append(card.value)
+    values.sort()
+    return values[:5]
+
+def compare_combination(comb1, comb2):
+    for k in range(len(comb1)):
+        if comb1[k] > comb2[k]:
+            return 1
+        if comb1[k] < comb2[k]:
+            return -1
+    return 0
+
+def get_combination(hand):
+    values = is_straight_flush(hand)
+    if values != []:
+        return 8, values
+    values = is_quad(hand)
+    if values != []:
+        return 7, values
+    values = is_full(hand)
+    if values != []:
+        return 6, values
+    values = is_flush(hand)
+    if values != []:
+        return 5, values
+    values = is_straight(hand)
+    if values != []:
+        return 4, values
+    values = is_trips(hand)
+    if values != []:
+        return 3, values
+    values = is_double_pair(hand)
+    if values != []:
+        return 2, values
+    values = is_pair(hand)
+    if values != []:
+        return 1, values
+    return 0, has_nothing(hand)
 
 
 if __name__ == "__main__":
-    
-    hand = string2hand("JhTh5c2sQdKhAh")
-    print(is_straight(hand))
-    print(is_straight_flush(hand))
 
-    hand = string2hand("3h4h5h2hQd6cAh")
-    print(is_straight(hand))
-    print(is_straight_flush(hand))
+    hand = string2hand("JhAsAd3h4c5sQc")
+    print(is_pair(hand))
+    print(is_double_pair(hand))
 
-
+    hand = string2hand("JhAsAd3h4c5sJc")
+    print(is_pair(hand))
+    print(is_double_pair(hand))
