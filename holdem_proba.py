@@ -146,7 +146,8 @@ def is_trips(hand):
         out += a[:2]
     return out
 
-def is_pair(hand):
+def is_full(hand):
+#check for full
     out = []
     nb_sort = {}
     for card in hand:
@@ -155,6 +156,25 @@ def is_pair(hand):
         else:
             nb_sort[card.value]=1
 
+    b = [];
+    p = [];
+    for i in nb_sort:
+        if nb_sort[i] ==3:
+            b.append(i)
+
+    for j in nb_sort:
+        if nb_sort[j] ==2:
+            p.append(j)
+    p.sort(reverse = True)
+
+    if b!=[] and p!=[]:
+        out+=b
+        out.append(p[0])
+
+    return out
+
+
+def is_pair(hand):
     for i in nb_sort:
         if nb_sort[i] == 2:
             out.append(i)
