@@ -77,25 +77,6 @@ def is_straight_flush(hand):
             consecutive_connected = []
     return []
 
-
-
-def hand_value(hand):
-    #check for flush:
-    color_sort = {Color.spade: [], Color.heart: [], Color.diamond: [], Color.club: []}
-    for card in hand:
-        color_sort[card.color].append(card.value)
-    for color in color_sort:
-        if len(color_sort[color]) >= 5: #Flush
-            if CardValue.A in color_sort[color]:
-                color_sort[color].append[1]
-            color_sort[color].sort()
-            #check for straight flush
-            if sum(np.array(color_sort[color]+[0]) -
-                    np.array([0]+color_sort[color]) == 1) >= 4:
-                return max(color_sort[color]) #Straight flush !!
-    return 0
-
-
 def is_quad(hand):
     #check for quad
     out = []
@@ -119,20 +100,42 @@ def is_quad(hand):
 
     return out
 
+def is_trips(hand):
+    #check for trips
+    out = []
+    nb_sort = {}
+    for card in hand:
+        if card.value in nb_sort:
+            nb_sort[card.value]+= 1
+        else:
+            nb_sort[card.value]=1
 
+    for i in nb_sort:
+        if nb_sort[i] ==3:
+            out.append(i)
+
+    a = sorted(nb_sort, reverse=True)
+    if out != []:
+        a.remove(out[0])
+        out += a[:2]
+        
+
+    
+
+    return out
 
 
 
 if __name__ == "__main__":
 
-    hand = string2hand("5s7hJs4s6s3s2h")
-    print(hand)
-    print(is_flush(hand))
-    print(is_straight_flush(hand))
+    #hand = string2hand("5s7hJs4s6s3s2h")
+    #print(hand)
+    #print(is_flush(hand))
+    #print(is_straight_flush(hand))
 
-    hand = string2hand("5s5c5d5hJs3s2s")
+    hand = string2hand("5s5c3d5hJs3s2s")
     print(hand)
-    print(is_quad(hand))
+    print(is_trips(hand))
 
 
 
