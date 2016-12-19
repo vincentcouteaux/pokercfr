@@ -146,16 +146,39 @@ def is_trips(hand):
         out += a[:2]
     return out
 
+def is_full(hand):
+#check for full
+    out = []
+    nb_sort = {}
+    for card in hand:
+        if card.value in nb_sort:
+            nb_sort[card.value]+= 1
+        else:
+            nb_sort[card.value]=1
 
+    b = [];
+    p = [];
+    for i in nb_sort:
+        if nb_sort[i] ==3:
+            b.append(i)
+
+    for j in nb_sort:
+        if nb_sort[j] ==2:
+            p.append(j)
+    p.sort(reverse = True)
+
+    if b!=[] and p!=[]:
+        out+=b
+        out.append(p[0])
+
+    return out
 
 if __name__ == "__main__":
-    
-    hand = string2hand("JhTh5c2sQdKhAh")
-    print(is_straight(hand))
-    print(is_straight_flush(hand))
 
-    hand = string2hand("3h4h5h2hQd6cAh")
+    hand = string2hand("JhQsJc2sQdKh2h")
     print(is_straight(hand))
     print(is_straight_flush(hand))
+    print(is_full(hand))
+
 
 
