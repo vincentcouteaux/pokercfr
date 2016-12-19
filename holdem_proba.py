@@ -95,9 +95,44 @@ def hand_value(hand):
                 return max(color_sort[color]) #Straight flush !!
     return 0
 
+
+def is_quad(hand):
+    #check for quad
+    out = []
+    nb_sort = {}
+    for card in hand:
+        if card.value in nb_sort:
+            nb_sort[card.value]+= 1
+        else:
+            nb_sort[card.value]=1
+
+    for i in nb_sort:
+        if nb_sort[i] == 4:
+            out.append(i) #value of the quad
+
+    a = sorted(nb_sort, reverse=True)
+    if out != []:
+        if a[0] == out[0]:
+            out.append(a[1]) #value of the kicker
+        else:
+            out.append(a[0]) #value of the kicker
+
+    return out
+
+
+
+
+
 if __name__ == "__main__":
+
     hand = string2hand("5s7hJs4s6s3s2h")
     print(hand)
     print(is_flush(hand))
     print(is_straight_flush(hand))
+
+    hand = string2hand("5s5c5d5hJs3s2s")
+    print(hand)
+    print(is_quad(hand))
+
+
 
