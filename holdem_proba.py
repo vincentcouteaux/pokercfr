@@ -340,6 +340,70 @@ def probability_to_win(card1, card2):
         draw = next_draw(draw, 49)
     return wins, loss, draws
 
+def estimate_proba(card1, card2, T):
+    deckstr = deck_str.replace(card1, '')
+    deckstr = deckstr.replace(card2, '')
+    deck = string2hand(deckstr)
+    pocket = string2hand(card1) + string2hand(card2)
+    wins = 0
+    loss = 0
+    draws = 0
+    for k in range(T):
+        cards = list(np.random.choice(deck, 7))
+        hand1 = pocket + cards[2:]
+        hand2 = cards
+        c = compare(hand1, hand2)
+        if c == 1:
+            wins += 1
+        elif c == -1:
+            loss += 1
+        else:
+            draws += 1
+    T = float(T)
+    return wins/T, loss/T, draws/T
+
+def value_to_char(value):
+    if value == 14:
+        return 'A'
+    elif value == 13:
+        return 'K'
+    elif value == 12:
+        return 'Q'
+    elif value == 11:
+        return 'J'
+    elif value == 10:
+        return 'T'
+    else:
+        return str(value)
+
+def estimate_all_preflop_probas(T):
+    #suited_cards:
+    pocket = [0, 1]
+    while pocket != []:
+        card1 = pocket[0] + 2
+        card2 = pocket[1] + 2
+        card1 = value_to_char(card1) + 'h'
+        card2 = value_to_char(card2) + 'h'
+        wins, losses, draws = estimate_proba(card1, card2, T)
+        print('suited {}{}, {}, {}, {}'.format(card1[0], card2[0], wins, losses, draws))
+        pocket=next_draw(pocket, 12)
+    #unsuited_cards:
+    pocket = [0, 1]
+    while pocket != []:
+        card1 = pocket[0] + 2
+        card2 = pocket[1] + 2
+        card1 = value_to_char(card1) + 'h'
+        card2 = value_to_char(card2) + 'c'
+        wins, losses, draws = estimate_proba(card1, card2, T)
+        print('unsuited {}{}, {}, {}, {}'.format(card1[0], card2[0], wins, losses, draws))
+        pocket=next_draw(pocket, 12)
+    #pairs:
+    for k in range(2, 15):
+        card1 = value_to_char(k) + 'h'
+        card2 = value_to_char(k) + 'c'
+        wins, losses, draws = estimate_proba(card1, card2, T)
+        print('{}{}, {}, {}, {}'.format(card1[0], card2[0], wins, losses, draws))
+
 
 if __name__ == "__main__":
 
@@ -359,4 +423,5 @@ if __name__ == "__main__":
         draw = next_draw(draw, 52)
         print(draw)
 
-    print(probability_to_win("As", "Ac"))
+    print(estimate_proba("As", "Ac", 10000))
+    estimate_all_preflop_probas(10000)
