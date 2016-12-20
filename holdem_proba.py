@@ -46,6 +46,20 @@ def string2hand(string):
         out.append(Card(value, color))
     return out
 
+def hand2string(hand):
+    s = ""
+    for card in hand:
+        s = s+str(card.value)
+        if card.color == Color.spade:
+            s = s+'s'
+        elif card.color == Color.heart:
+            s = s+'h'
+        elif card.color == Color.diamond:
+            s = s+'d'
+        else:
+            s = s+'c'
+    return s
+
 def is_flush(hand):
     color_sort = {Color.spade: [], Color.heart: [], Color.diamond: [], Color.club: []}
     for card in hand:
@@ -158,23 +172,35 @@ def is_full(hand):
 
     b = [];
     p = [];
-    for i in nb_sort:
-        if nb_sort[i] ==3:
+    for i in sorted(nb_sort, reverse=True):
+        if nb_sort[i] == 3:
             b.append(i)
-
-    for j in nb_sort:
-        if nb_sort[j] ==2:
+    if b == []:
+        return []
+    del nb_sort[b[0]]
+    for j in sorted(nb_sort, reverse=True):
+        if nb_sort[j] >= 2:
             p.append(j)
+    if p == []:
+        return []
     p.sort(reverse = True)
-
-    if b!=[] and p!=[]:
-        out+=b
+    b.sort(reverse = True)
+    out.append(b[0])
+    if len(b) > 1 and b[1] > p[0]:
+            out.append(b[1])
+    else:
         out.append(p[0])
-
     return out
 
 
 def is_pair(hand):
+    nb_sort = {}
+    for card in hand:
+        if card.value in nb_sort:
+            nb_sort[card.value]+= 1
+        else:
+            nb_sort[card.value]=1
+    out = []
     for i in nb_sort:
         if nb_sort[i] == 2:
             out.append(i)
@@ -212,10 +238,20 @@ def has_nothing(hand):
     return values[:5]
 
 def compare_combination(comb1, comb2):
+    if type(comb1) == int:
+        if comb1 > comb2:
+            return 1
+        elif comb1 < comb2:
+            return -1
+        else:
+            return 0
+    if (len(comb1) != len(comb2)):
+        print('{}, {}'.format(comb1, comb2))
+        return -5
     for k in range(len(comb1)):
         if comb1[k] > comb2[k]:
             return 1
-        if comb1[k] < comb2[k]:
+        elif comb1[k] < comb2[k]:
             return -1
     return 0
 
@@ -246,6 +282,64 @@ def get_combination(hand):
         return 1, values
     return 0, has_nothing(hand)
 
+def compare(hand1, hand2):
+    """! return 1 if hand1 betas hand2, -1 if hand2 beats hand1, 0 for a split pot """
+    c1, v1 = get_combination(hand1)
+    c2, v2 = get_combination(hand2)
+    if (c1 > c2):
+        return 1
+    elif (c2 > c1):
+        return -1
+    else:
+        c = compare_combination(v1, v2)
+        if c == -5:
+            print(c1)
+        return c
+
+deck_str = "2h3h4h5h6h7h8h9hThJhQhKhAh2s3s4s5s6s7s8s9sTsJsQsKsAs2d3d4d5d6d7d8d9dTdJdQdKdAd2c3c4c5c6c7c8c9cTcJcQcKcAc"
+
+def next_draw(draw, maxi):
+    size = len(draw)
+    k = size - 1
+    from_last = 0
+    while draw[k] == maxi - from_last:
+        k -= 1
+        from_last += 1
+    if k == -1:
+        return []
+    draw[k] += 1
+    c=1
+    #while k < len(draw) - 1 and draw[k] < maxi - size + k + 1:
+    while k < len(draw) - 1 and draw[k] + c <= maxi - size + k + 2:
+        draw[k+1] = draw[k] + c
+        k+=1
+        c+=1
+    return draw
+
+def probability_to_win(card1, card2):
+    deckstr = deck_str.replace(card1, '')
+    deckstr = deckstr.replace(card2, '')
+    deck = string2hand(deckstr)
+    draw = range(7)
+    pocket = string2hand(card1) + string2hand(card2)
+    wins = 0
+    loss = 0
+    draws = 0
+    print(len(deck))
+    while draw != []:
+        cards = [deck[i] for i in draw]
+        hand1 = pocket + cards[2:]
+        hand2 = cards
+        c = compare(hand1, hand2)
+        if c == 1:
+            wins += 1
+        elif c == -1:
+            loss += 1
+        else:
+            draws += 1
+        draw = next_draw(draw, 49)
+    return wins, loss, draws
+
 
 if __name__ == "__main__":
 
@@ -256,3 +350,13 @@ if __name__ == "__main__":
     hand = string2hand("JhAsAd3h4c5sJc")
     print(is_pair(hand))
     print(is_double_pair(hand))
+
+    print(compare(string2hand("JhJsJcQh2hQcQs"), string2hand("JhJsJcQh2hQc4c")))
+
+    draw = [45, 46, 47, 48, 49, 50, 51]
+    #draw = range(7)
+    for k in range(5):
+        draw = next_draw(draw, 52)
+        print(draw)
+
+    print(probability_to_win("As", "Ac"))
