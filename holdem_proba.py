@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.misc import comb
+from random import shuffle
 
 class Color:
     spade = 0
@@ -49,7 +50,17 @@ def string2hand(string):
 def hand2string(hand):
     s = ""
     for card in hand:
-        s = s+str(card.value)
+        if card.value == 14:
+            v = 'A'
+        elif card.value == 13:
+            v = 'K'
+        elif card.value == 12:
+            v = 'Q'
+        elif card.value == 11:
+            v = 'J'
+        else:
+            v = str(card.value)
+        s = s+v
         if card.color == Color.spade:
             s = s+'s'
         elif card.color == Color.heart:
@@ -234,7 +245,7 @@ def has_nothing(hand):
     values = []
     for card in hand:
         values.append(card.value)
-    values.sort()
+    values.sort(reverse=True)
     return values[:5]
 
 def compare_combination(comb1, comb2):
@@ -316,12 +327,17 @@ def next_draw(draw, maxi):
         c+=1
     return draw
 
-def probability_to_win(card1, card2):
+def probability_to_win(card1, card2, flop1, flop2, flop3):
     deckstr = deck_str.replace(card1, '')
     deckstr = deckstr.replace(card2, '')
+    deckstr = deckstr.replace(flop1, '')
+    deckstr = deckstr.replace(flop2, '')
+    deckstr = deckstr.replace(flop3, '')
     deck = string2hand(deckstr)
-    draw = range(7)
+    community = range(2)
+    opponent = range(2)
     pocket = string2hand(card1) + string2hand(card2)
+    flop = string2hand(flop1) + string2hand(flop2) + string2hand(flop3)
     wins = 0
     loss = 0
     draws = 0
@@ -349,7 +365,9 @@ def estimate_proba(card1, card2, T):
     loss = 0
     draws = 0
     for k in range(T):
-        cards = list(np.random.choice(deck, 7))
+        #cards = list(np.random.choice(deck, 7))
+        shuffle(deck)
+        cards = deck[:7]
         hand1 = pocket + cards[2:]
         hand2 = cards
         c = compare(hand1, hand2)
@@ -423,5 +441,4 @@ if __name__ == "__main__":
         draw = next_draw(draw, 52)
         print(draw)
 
-    print(estimate_proba("As", "Ac", 10000))
-    estimate_all_preflop_probas(10000)
+    estimate_all_preflop_probas(60000)
