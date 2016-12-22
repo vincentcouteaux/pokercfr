@@ -19,6 +19,13 @@ class Card:
     def __init__(self, value, color):
         self.value = value
         self.color = color
+    def deck_position(self):
+        return self.value-2 + 13*self.color
+    def is_in(self, hand):
+        hands_index = []
+        for card in hand:
+            hands_index.append(card.deck_position())
+        return self.deck_position() in hands_index
 
 def string2hand(string):
     out = []
