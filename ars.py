@@ -1,6 +1,7 @@
 from holdem_proba import *
 import numpy as np
 from scipy.misc import comb
+import csv
 
 def save_obj(obj, name):
     with open(name + '.pkl', 'wb') as f:
@@ -41,7 +42,38 @@ def estimate_hand_strength(pocket, community, iterations):
             ties += 1
     return (float(wins) + float(ties)/2)
 
+def estimate_hand_strength_preflop(pocket, filename):
+    with open(filename, 'rb') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        card1 = pocket[0]
+        card2 = pocket[1]
+
+        if card1.value<=card2.value:
+            pair = hand2string([card1])[0] + hand2string([card2])[0]
+        else:
+            pair = hand2string([card2])[0] + hand2string([card1])[0]
+
+        if card1.value == card2.value:
+            for row in reader:
+                if row[0] == pair:
+                    strength = float(row[1]) + float(row[3])/2
+        elif card1.color == card2.color:
+            for row in reader:
+                if row[0] == 'suited':
+                    if row[1] == pair:
+                        strength = float(row[2]) + float(row[4])/2
+        else :
+            for row in reader:
+                if row[0] == 'unsuited':
+                    if row[1] == pair:
+                        strength = float(row[2]) + float(row[4])/2
+
+
+    return strength
+
 if __name__ == "__main__":
-    hand = string2hand("8hTh9hJhQh")
-    print(estimate_hand_strength(string2hand("AhAc"), string2hand("AsAdKc"), 1000))
+    #hand = string2hand("8hTh9hJhQh")
+    #print(estimate_hand_strength(string2hand("AhAc"), string2hand("AsAdKc"), 1000))
+    hand = string2hand("AcAd")
+    print(estimate_hand_strength_preflop(hand, 'results'))
 

@@ -23,7 +23,10 @@ def holdem_history_to_info_set(history, player_index):
 	#print(hand2string(pocket))
 	community  = cards[2:]
 	#print(hand2string(community))
-	strength = estimate_hand_strength(pocket, community, iterations)
+    if community == []:
+       strength = estimate_hand_stength_preflop(pocket, filename)
+    else:
+	   strength = estimate_hand_strength(pocket, community, iterations)
 	#print(strength)
 	i = len(history)
 	while not isinstance(history[i-1], Card):
