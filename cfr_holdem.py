@@ -28,7 +28,7 @@ def holdem_history_to_info_set(history, player_index):
 	i = len(history)
 	while not isinstance(history[i-1], Card):
 		i = i-1
-	info_set = [strength/iterations] + history[i:]
+	info_set = [int(strength/iterations)] + history[i:]
 	return info_set
 
 
@@ -41,30 +41,31 @@ if __name__ == "__main__":
 	#print(info_set)
 
 def holdem_cfr_2p(game, history, player, pi1, pi2, strategy, cumulated_regret, cumulated_strat):
-	actions = game.get_actions_available(history)
-	if type(actions) == int:
+    actions = game.get_actions_available(history)
+    if type(actions) == int:
         if player == 0:
             return actions
         else:
             return -actions
     if actions == 'D':
-    	history += game.deal_cards()
+    	history += game.deal_cards(history)
+        actions = game.get_actions_available(history)
 
     player_turn = game.whose_turn(history)
     number_actions = len(actions)
     v_sigma = 0
     v_sigmaI = np.zeros(number_actions)
-    info_set = holdem_history_to_info_set(history, player_turn)
+    info_set = tuple(holdem_history_to_info_set(history, player_turn))
     if info_set not in strategy:
         strategy[info_set] = np.ones(number_actions) / number_actions
         cumulated_regret[info_set] = np.zeros(number_actions);
         cumulated_strat[info_set] = np.zeros(number_actions);
     for i, a in enumerate(actions):
         if player_turn == 0:
-            v_sigmaI[i] = holdem_cfr_2p(game, history + a, player, strategy[info_set][i]*pi1, pi2,
+            v_sigmaI[i] = holdem_cfr_2p(game, history + [a], player, strategy[info_set][i]*pi1, pi2,
                     strategy, cumulated_regret, cumulated_strat)
         else:
-            v_sigmaI[i] = holdem_cfr_2p(game, history + a, player, pi1, strategy[info_set][i]*pi2,
+            v_sigmaI[i] = holdem_cfr_2p(game, history + [a], player, pi1, strategy[info_set][i]*pi2,
                     strategy, cumulated_regret, cumulated_strat)
         v_sigma += strategy[info_set][i]*v_sigmaI[i]
     if player_turn == player:
@@ -90,9 +91,14 @@ def get_optimal_strat(game, T):
     cumulated_regret = {}
     cumulated_strategy = {}
     for t in range(T):
+        print(t)
         cards = game.deal()
         holdem_cfr_2p(game, cards, 0, 1, 1, strategy, cumulated_regret, cumulated_strategy)
         holdem_cfr_2p(game, cards, 1, 1, 1, strategy, cumulated_regret, cumulated_strategy)
     for infoset in cumulated_strategy:
         cumulated_strategy[infoset] /= np.sum(cumulated_strategy[infoset])
     return cumulated_strategy
+
+if __name__ == "__main__":
+    strat = get_optimal_strat(HoldemHU(), 500)
+    print(strat)

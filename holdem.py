@@ -73,6 +73,8 @@ class HoldemHU: #implements game
             if len(community) == 5:
                 winner = compare(pocket0 + community, pocket1 + community)
                 return bet[0] *  winner # both bet the same
+        else:
+            print_history(history)
 
 def generate_random_history():
     hu = HoldemHU()
