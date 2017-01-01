@@ -4,7 +4,7 @@ from khun import *
 
 #Player 0 has the button
 #Player 1 is UTG
-# An history is for instance 'JQpb', button has card J, utg has card Q, button passes, utg bets
+#A history is for instance 'JQpb', button has card J, utg has card Q, button passes, utg bets
 
 debug = False
 
