@@ -26,6 +26,12 @@ class Card:
         for card in hand:
             hands_index.append(card.deck_position())
         return self.deck_position() in hands_index
+    def remove_from(self, hand):
+        out = []
+        for card in hand:
+            if card.deck_position() != self.deck_position():
+                out.append(card)
+        return out
 
 def string2hand(string):
     out = []
@@ -314,7 +320,7 @@ def compare(hand1, hand2):
             print(c1)
         return c
 
-deck_str = "2h3h4h5h6h7h8h9hThJhQhKhAh2s3s4s5s6s7s8s9sTsJsQsKsAs2d3d4d5d6d7d8d9dTdJdQdKdAd2c3c4c5c6c7c8c9cTcJcQcKcAc"
+deck_str = "2s3s4s5s6s7s8s9sTsJsQsKsAs2h3h4h5h6h7h8h9hThJhQhKhAh2d3d4d5d6d7d8d9dTdJdQdKdAd2c3c4c5c6c7c8c9cTcJcQcKcAc"
 
 def next_draw(draw, maxi):
     size = len(draw)
