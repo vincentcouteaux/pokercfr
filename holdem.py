@@ -25,6 +25,14 @@ class HoldemHU: #implements game
             return [deck[0]]
 
     @staticmethod
+    def whose_turn(history):
+        actions = 0
+        for c in history:
+            if not isinstance(c, Card):
+                actions += 1
+        return actions%2
+
+    @staticmethod
     def get_actions_available(history):
         if len(history) == 4:
             return ['c', 'r']
