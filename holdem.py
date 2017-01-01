@@ -35,7 +35,7 @@ class HoldemHU: #implements game
     @staticmethod
     def get_actions_available(history):
         if len(history) == 4:
-            return ['c', 'r']
+            return ['f', 'c', 'r']
         pocket0 = history[:2]
         pocket1 = history[2:4]
         community = []
