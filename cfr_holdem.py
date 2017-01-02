@@ -114,6 +114,6 @@ def get_optimal_strat(game, T):
 
 if __name__ == "__main__":
     filename = 'hulhe_strat1'
-    strat = get_optimal_strat(HoldemHU(), 3)
+    strat = get_optimal_strat(HoldemHU(), 10)
     save_obj(strat, filename)
     print(strat)
