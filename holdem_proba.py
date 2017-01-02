@@ -71,6 +71,8 @@ def hand2string(hand):
             v = 'Q'
         elif card.value == 11:
             v = 'J'
+        elif card.value == 10:
+            v = 'T'
         else:
             v = str(card.value)
         s = s+v
