@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import os.path
 from khun import *
 from ars import *
 from holdem_proba import *
@@ -104,9 +105,15 @@ def get_optimal_strat(game, T):
         holdem_cfr_2p(game, cards, 0, 1, 1, strategy, cumulated_regret, cumulated_strategy)
         holdem_cfr_2p(game, cards, 1, 1, 1, strategy, cumulated_regret, cumulated_strategy)
     for infoset in cumulated_strategy:
-        cumulated_strategy[infoset] /= np.sum(cumulated_strategy[infoset])
+        if np.sum(cumulated_strategy[infoset]) <= 0.:
+            nb_actions = cumulated_strategy[infoset].size
+            cumulated_strategy[infoset] = np.ones(nb_actions)/nb_actions
+        else:
+            cumulated_strategy[infoset] /= np.sum(cumulated_strategy[infoset])
     return cumulated_strategy
 
 if __name__ == "__main__":
+    filename = 'hulhe_strat1'
     strat = get_optimal_strat(HoldemHU(), 3)
+    save_obj(strat, filename)
     print(strat)

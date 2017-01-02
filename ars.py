@@ -2,6 +2,7 @@ from holdem_proba import *
 import numpy as np
 from scipy.misc import comb
 import csv
+import pickle
 
 def save_obj(obj, name):
     with open(name + '.pkl', 'wb') as f:
