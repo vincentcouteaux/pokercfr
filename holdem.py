@@ -46,7 +46,7 @@ class HoldemHU: #implements game
                 community.append(c)
             else:
                 if c == 'f':
-                    return (2*turn - 1)*(bet[0] + bet[1] - bet[1 - turn])
+                    return (2*turn - 1)*bet[turn]
                 elif c == 'p':
                     turn = 1 - turn
                 elif c == 'b':
