@@ -43,6 +43,8 @@ if __name__ == "__main__":
 	history = pocketP0 + pocketP1 + ['p','b','b'] + community
 	info_set = holdem_history_to_info_set(history, 0)
 
+np.seterr(all='raise')
+
 def holdem_cfr_2p(game, history, player, pi1, pi2, strategy, cumulated_regret, cumulated_strat):
     actions = game.get_actions_available(history)
     if type(actions) == int:

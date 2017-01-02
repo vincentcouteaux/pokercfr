@@ -52,8 +52,6 @@ def estimate_hand_strength_preflop(pocket, filename):
             pair = hand2string([card1])[0] + hand2string([card2])[0]
         else:
             pair = hand2string([card2])[0] + hand2string([card1])[0]
-        print(pair)
-
         if card1.value == card2.value:
             for row in reader:
                 if row[0] == pair:
@@ -68,7 +66,6 @@ def estimate_hand_strength_preflop(pocket, filename):
                 if row[0][:2] == 'un':
                     if row[0][-2:] == pair:
                 	    strength = float(row[1]) + float(row[3])/2
-
     return strength
 
 if __name__ == "__main__":
