@@ -1,6 +1,7 @@
 from cfr_holdem import *
+from ars import *
 
-game = holfemHU
+game = HoldemHU()
 
 strategy = load_obj('hulhe_strat1')
 print(strategy)
@@ -24,39 +25,41 @@ while command != 'n':
     actions = game.get_actions_available(history)
 
     if human_dealer:
-        print('Your cards are {0}'.format(hand2string(history[:2]))
-        human_to_play = False
-    else:
-        print('Your cards are {0}'.format(hand2string(history[2:4]))
+        print('Your cards are {0}'.format(hand2string(history[:2])))
         human_to_play = True
+    else:
+        print('Your cards are {0}'.format(hand2string(history[2:4])))
+        human_to_play = False
     while type(actions) != int:
         if not human_to_play:
             ai_info = holdem_history_to_info_set(history,1*human_dealer)
             #print("ai info: {0}, strategy: {1}".format(ai_info, strategy[ai_info]))
-            c = draw(strategy[ai_info])
-            history.append(actions[c])
-            print('ai played {0}'.format(actions[c]))
+            if actions != 'D':
+                human_to_play = True
+                c = draw(strategy[tuple(ai_info)])
+                history.append(actions[c])
+                print('ai played {0}'.format(actions[c]))
             actions = game.get_actions_available(history)
             if actions == 'D':
                 cards = game.deal_cards(history)
                 history += cards
                 print(hand2string(cards))
-            human_to_play = True
         else:
-            print('You can play: {0}'.format(actions))
-            c = raw_input()
-            history.append(c)
+            if actions != 'D':
+                human_to_play = False
+                print('You can play: {0}'.format(actions))
+                c = raw_input()
+                history.append(c)
             actions = game.get_actions_available(history)
             if actions == 'D':
                 cards = game.deal_cards(history)
                 history += cards
                 print(hand2string(cards))
-            human_to_play = False
     if not human_dealer:
         actions = -actions
     human_stack += actions
     ai_stack -= actions
-    print("oppenent shows {0}".format(history[1*human_dealer]))
+    print("oppenent shows {0}".format(hand2string(history[2*human_dealer: 2*(human_dealer+1)])))
     print("your stack: {0}, opponent stack: {1}".format(human_stack, ai_stack))
     print("rematch ? 'y' yes, 'n' no")
     command = raw_input()
