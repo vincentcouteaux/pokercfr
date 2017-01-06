@@ -5,6 +5,7 @@ from khun import *
 from ars import *
 from holdem_proba import *
 from holdem import *
+import os.path
 
 #Player 0 has the button
 #Player 1 is UTG
@@ -28,11 +29,12 @@ def holdem_history_to_info_set(history, player_index):
         strength = estimate_hand_strength_preflop(pocket, 'results')
     else:
         strength = estimate_hand_strength(pocket, community, iterations)
+        strength /= iterations
     #print(strength)
     i = len(history)
     while not isinstance(history[i-1], Card):
         i = i-1
-    info_set = [int(10*strength/iterations)] + history[i:]
+    info_set = [int(10*strength)] + history[i:]
     if len(cards) == 2:
         info_set.append('pre')
     return info_set
@@ -112,8 +114,36 @@ def get_optimal_strat(game, T):
             cumulated_strategy[infoset] /= np.sum(cumulated_strategy[infoset])
     return cumulated_strategy
 
+def accumulate_strategy(game, T, filename):
+    if os.path.exists(filename):
+        strategy, cumulated_strategy, cumulated_regret = load_obj(filename)
+    else:
+        strategy = {}
+        cumulated_strategy = {}
+        cumulated_regret = {}
+    for t in range(T):
+        print(t)
+        cards = game.deal()
+        holdem_cfr_2p(game, cards, 0, 1, 1, strategy, cumulated_regret, cumulated_strategy)
+        holdem_cfr_2p(game, cards, 1, 1, 1, strategy, cumulated_regret, cumulated_strategy)
+    save_obj((strategy, cumulated_strategy, cumulated_regret), filename)
+
+def cum_strat2strat(cumulated_strategy):
+    for infoset in cumulated_strategy:
+        if np.sum(cumulated_strategy[infoset]) <= 0.:
+            nb_actions = cumulated_strategy[infoset].size
+            cumulated_strategy[infoset] = np.ones(nb_actions)/nb_actions
+        else:
+            cumulated_strategy[infoset] /= np.sum(cumulated_strategy[infoset])
+    return cumulated_strategy
+
+
 if __name__ == "__main__":
-    filename = 'hulhe_strat1'
-    strat = get_optimal_strat(HoldemHU(), 10)
-    save_obj(strat, filename)
-    print(strat)
+    hand = string2hand("AsAhKhQs")
+    print(holdem_history_to_info_set(hand, 0))
+    hand += ['c']
+    print(holdem_history_to_info_set(hand, 1))
+    #filename = 'hulhe_strat2'
+    accumulate_strategy(HoldemHU(), 3, 'hulhe_cumstrat')
+    #save_obj(strat, filename)
+    #print(strat)

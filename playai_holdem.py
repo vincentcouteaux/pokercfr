@@ -3,7 +3,9 @@ from ars import *
 
 game = HoldemHU()
 
-strategy = load_obj('hulhe_strat1')
+#strategy = load_obj('hulhe_strat2')
+_, strategy, _ = load_obj('hulhe_cumstrat')
+strategy = cum_strat2strat(strategy)
 print(strategy)
 
 human_stack = 10
@@ -26,16 +28,14 @@ while command != 'n':
 
     if human_dealer:
         print('Your cards are {0}'.format(hand2string(history[:2])))
-        human_to_play = True
     else:
         print('Your cards are {0}'.format(hand2string(history[2:4])))
-        human_to_play = False
     while type(actions) != int:
+        human_to_play = (game.whose_turn(history) != human_dealer)
         if not human_to_play:
             ai_info = holdem_history_to_info_set(history,1*human_dealer)
             #print("ai info: {0}, strategy: {1}".format(ai_info, strategy[ai_info]))
             if actions != 'D':
-                human_to_play = True
                 c = draw(strategy[tuple(ai_info)])
                 history.append(actions[c])
                 print('ai played {0}'.format(actions[c]))
@@ -46,7 +46,6 @@ while command != 'n':
                 print(hand2string(cards))
         else:
             if actions != 'D':
-                human_to_play = False
                 print('You can play: {0}'.format(actions))
                 c = raw_input()
                 history.append(c)

@@ -26,11 +26,13 @@ class HoldemHU: #implements game
 
     @staticmethod
     def whose_turn(history):
-        actions = 0
-        for c in history:
+        turn = 0
+        for c in history[4:]:
             if not isinstance(c, Card):
-                actions += 1
-        return actions%2
+                turn = 1-turn
+            else:
+                turn = 1
+        return turn
 
     @staticmethod
     def get_actions_available(history):
@@ -40,25 +42,27 @@ class HoldemHU: #implements game
         pocket1 = history[2:4]
         community = []
         bet = [1, 2] # player 0 bets 1 blind, player 1 bets 2 blind
-        turn = 0
+        #turn = 0
         for i, c in enumerate(history[4:]):
             if isinstance(c, Card):
                 community.append(c)
             else:
+                turn = HoldemHU.whose_turn(history[:(i+4)])
                 if c == 'f':
                     return (2*turn - 1)*bet[turn]
                 elif c == 'p':
-                    turn = 1 - turn
+                    pass
+                    #turn = 1 - turn
                 elif c == 'b':
                     bet[turn] += 1
-                    turn = 1 - turn
+                    #turn = 1 - turn
                 elif c == 'r':
                     bet[turn] += 2
-                    turn = 1 - turn
+                    #turn = 1 - turn
                 elif c == 'c':
                     if history[3+i] != 'p':
                         bet[turn] += 1
-                    turn = 1 - turn
+                    #turn = 1 - turn
         if isinstance(history[-1], Card):
             return ['p', 'b']
         if history[-1] == 'p':
@@ -68,6 +72,11 @@ class HoldemHU: #implements game
         if history[-1] == 'b':
             return ['f', 'c', 'r']
         if history[-1] == 'c':
+            if len(community) == 0:
+                if isinstance(history[-2], Card):
+                    return ['c', 'r']
+                else:
+                    return 'D'
             if len(community) < 5:
                 return 'D'
             if len(community) == 5:
