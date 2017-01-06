@@ -115,7 +115,7 @@ def get_optimal_strat(game, T):
     return cumulated_strategy
 
 def accumulate_strategy(game, T, filename):
-    if os.path.exists(filename):
+    if os.path.exists(filename + '.pkl'):
         strategy, cumulated_strategy, cumulated_regret = load_obj(filename)
     else:
         strategy = {}
@@ -144,6 +144,6 @@ if __name__ == "__main__":
     hand += ['c']
     print(holdem_history_to_info_set(hand, 1))
     #filename = 'hulhe_strat2'
-    accumulate_strategy(HoldemHU(), 3, 'hulhe_cumstrat')
+    accumulate_strategy(HoldemHU(), 7, 'hulhe_cumstrat')
     #save_obj(strat, filename)
     #print(strat)
