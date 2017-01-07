@@ -13,7 +13,7 @@ import os.path
 #Its length is variable and ends with a final state
 
 def holdem_history_to_info_set(history, player_index):
-    iterations = 500
+    iterations = 100
     pos = 1 - player_index
     full_info_set = history[:2*pos] + history[2*(pos+1):]
     cards = []
@@ -144,6 +144,6 @@ if __name__ == "__main__":
     hand += ['c']
     print(holdem_history_to_info_set(hand, 1))
     #filename = 'hulhe_strat2'
-    accumulate_strategy(HoldemHU(), 7, 'hulhe_cumstrat')
+    accumulate_strategy(HoldemHU(), 150, 'hulhe_cumstrat')
     #save_obj(strat, filename)
     #print(strat)
