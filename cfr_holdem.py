@@ -144,6 +144,6 @@ if __name__ == "__main__":
     hand += ['c']
     print(holdem_history_to_info_set(hand, 1))
     #filename = 'hulhe_strat2'
-    accumulate_strategy(HoldemHU(), 150, 'hulhe_cumstrat')
+    accumulate_strategy(HoldemHU(), 1000, 'hulhe_cumstrat')
     #save_obj(strat, filename)
     #print(strat)
