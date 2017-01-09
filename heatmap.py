@@ -2,10 +2,12 @@ import numpy as np
 from cfr_holdem import *
 import matplotlib.pyplot as plt
 from holdem_proba import next_draw
+from abstract import *
 
-_, strategy, _ = load_obj('hulhe_cumstrat')
-strategy = cum_strat2strat(strategy)
-print(strategy)
+#_, strategy, _ = load_obj('hulhe_cumstrat')
+#strategy = cum_strat2strat(strategy)
+#print(strategy)
+strategy = get_optimal_strat(PreflopPoker(10), 20000)
 
 def build_preflop_heatmap(strat):
     out = np.zeros((13, 13, 3))

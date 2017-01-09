@@ -35,6 +35,7 @@ while command != 'n':
         if not human_to_play:
             ai_info = holdem_history_to_info_set(history,1*human_dealer)
             #print("ai info: {0}, strategy: {1}".format(ai_info, strategy[ai_info]))
+            print("bucket: {}".format(ai_info[0]))
             if actions != 'D':
                 c = draw(strategy[tuple(ai_info)])
                 history.append(actions[c])
