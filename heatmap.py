@@ -3,7 +3,7 @@ from cfr_holdem import *
 import matplotlib.pyplot as plt
 from holdem_proba import next_draw
 
-_, strategy, _ = load_obj('hulhe_cumstrat')
+_, strategy, _ = load_obj('hulhe_cumstrat2')
 strategy = cum_strat2strat(strategy)
 print(strategy)
 
@@ -45,6 +45,10 @@ def build_preflop_heatmap(strat):
         if tuple(info_set) in strat:
             out[k-2, k-2, :] = strat[tuple(info_set)]
     print(buckets)
+    c = np.array(out[:,:,1])
+    r = np.array(out[:,:,2])
+    out[:,:,1] = r
+    out[:,:,2] = c
     plt.imshow(out, interpolation='nearest')
     plt.show()
 
