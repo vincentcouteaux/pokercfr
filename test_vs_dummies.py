@@ -12,10 +12,10 @@ def draw(p):
         i += 1
     return i
 
-_, strategy, _ = load_obj('hulhe_cumstrat')
-strategy = cum_strat2strat(strategy)
-#strategy = get_optimal_strat(AbstractPoker(10), 10000)
-#strategy.update(get_optimal_strat(PreflopPoker(10), 10000))
+#_, strategy, _ = load_obj('hulhe_cumstrat')
+#strategy = cum_strat2strat(strategy)
+strategy = get_optimal_strat(AbstractPoker(10), 10000)
+strategy.update(get_optimal_strat(PreflopPoker(10), 10000))
 
 caller = {}
 for k in range(10):
